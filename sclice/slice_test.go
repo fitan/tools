@@ -169,3 +169,35 @@ func TestMinus(t *testing.T) {
 		})
 	}
 }
+
+func TestEachStringPtr(t *testing.T) {
+	type args struct {
+		l []string
+		f func(ptr *string)
+	}
+	tests := []struct {
+		name string
+		args args
+		want []string
+	}{
+		{
+			"stringPtr",
+			args{
+				l: []string{"1", "2", "3"},
+				f: func(ptr *string) {
+					*ptr = *ptr + "hello"
+				},
+			},
+			[]string{"1hello", "2hello", "3hello"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			EachStringPtr(&tt.args.l, tt.args.f)
+		})
+
+		if !reflect.DeepEqual(tt.args.l, tt.want) {
+			t.Errorf("EachStringPtr() got = %v, want %v", tt.args.l, tt.want)
+		}
+	}
+}

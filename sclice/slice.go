@@ -65,3 +65,17 @@ func Minus(l1, l2 []interface{}, kf KF) ([]interface{}, error) {
 	}
 	return m1.Values(), nil
 }
+
+// 迭代[]string 传入string的指针  修改会修改slice中的值
+func EachStringPtr(l *[]string, f func(ptr *string)) {
+	for i, _ := range *l {
+		f(&(*l)[i])
+	}
+}
+
+// 迭代[]string 传入string
+func EachString(l []string, f func(s string)) {
+	for _, s := range l {
+		f(s)
+	}
+}
