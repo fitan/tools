@@ -7,16 +7,16 @@ import (
 	"strings"
 )
 
-type client struct {
+type Client struct {
 	HttpClient *resty.Client
 }
 
-func NewClient(url string, debug bool) *client {
-	return &client{HttpClient: resty.New().SetDebug(debug).SetHostURL(url)}
+func NewClient(url string, debug bool) *Client {
+	return &Client{HttpClient: resty.New().SetDebug(debug).SetHostURL(url)}
 }
 
 // QueryRange 范围查询
-func (c *client) QueryRange(query, startTime, endTime, step, timeout string) (*resty.Response, error) {
+func (c *Client) QueryRange(query, startTime, endTime, step, timeout string) (*resty.Response, error) {
 	parmas := map[string]string{
 		"query": query,
 		"start": startTime,
@@ -30,7 +30,7 @@ func (c *client) QueryRange(query, startTime, endTime, step, timeout string) (*r
 }
 
 // InstantQuery 时间点查询
-func (c *client) InstantQuery(query, time, timeout string) (*resty.Response, error) {
+func (c *Client) InstantQuery(query, time, timeout string) (*resty.Response, error) {
 	parmas := map[string]string{}
 	parmas["query"] = query
 	if time != "" {
@@ -74,7 +74,7 @@ var RangeIPF = func(data []byte) (map[string][][]interface{}, error) {
 	return m, nil
 }
 
-func (c *client) BatchInstant(query string, f func(data []byte) (map[string]string, error)) (map[string]string, error) {
+func (c *Client) BatchInstant(query string, f func(data []byte) (map[string]string, error)) (map[string]string, error) {
 	res, err := c.InstantQuery(query, "", "")
 	if err != nil {
 		return nil, err
@@ -82,11 +82,11 @@ func (c *client) BatchInstant(query string, f func(data []byte) (map[string]stri
 	return f(res.Body())
 }
 
-func (c *client) BatchInstantByIP(query string) (map[string]string, error) {
+func (c *Client) BatchInstantByIP(query string) (map[string]string, error) {
 	return c.BatchInstant(query, InstantIPF)
 }
 
-func (c *client) BatchRange(query, start, end, step string, f func(data []byte) (map[string][][]interface{}, error)) (map[string][][]interface{}, error) {
+func (c *Client) BatchRange(query, start, end, step string, f func(data []byte) (map[string][][]interface{}, error)) (map[string][][]interface{}, error) {
 	res, err := c.QueryRange(query, start, end, step, "")
 	if err != nil {
 		return nil, err
@@ -94,6 +94,6 @@ func (c *client) BatchRange(query, start, end, step string, f func(data []byte) 
 	return f(res.Body())
 }
 
-func (c *client) BatchRangeByIP(query, start, end, step string) (map[string][][]interface{}, error) {
+func (c *Client) BatchRangeByIP(query, start, end, step string) (map[string][][]interface{}, error) {
 	return c.BatchRange(query, start, end, step, RangeIPF)
 }
